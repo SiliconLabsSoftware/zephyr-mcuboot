@@ -29,7 +29,7 @@
 #include <mcuboot_config/mcuboot_config.h>
 #include <zephyr/sys/util.h>
 
-#if !defined(MCUBOOT_HW_KEY)
+#if !defined(MCUBOOT_HW_KEY) && !defined(MCUBOOT_BUILTIN_KEY)
 #if defined(MCUBOOT_SIGN_RSA) || defined(MCUBOOT_SIGN_EC256) || defined(MCUBOOT_SIGN_ED25519)
 #define HAVE_KEYS
 
@@ -80,7 +80,7 @@ const int bootutil_key_cnt = sizeof(bootutil_keys) / sizeof(bootutil_keys[0]);
 #endif /* HAVE_KEYS */
 #else
 unsigned int pub_key_len;
-struct bootutil_key bootutil_keys[1] = {
+const struct bootutil_key bootutil_keys[1] = {
     {
         .key = 0,
         .len = &pub_key_len,
