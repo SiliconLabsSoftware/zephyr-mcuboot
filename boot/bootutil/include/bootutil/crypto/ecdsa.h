@@ -410,7 +410,12 @@ static inline void bootutil_ecdsa_init(bootutil_ecdsa_context *ctx)
      * shifted (by one in this case) because zero is reserved (PSA_KEY_ID_NULL)
      * and considered invalid.
      */
+#if defined(MCUBOOT_BUILTIN_KEY_ID)
+    ctx->key_id = (psa_key_id_t)MCUBOOT_BUILTIN_KEY_ID;
+#else
     ctx->key_id++; /* Make sure it is not equal to 0. */
+#endif
+
 #if defined(MCUBOOT_SIGN_EC256)
     ctx->curve_byte_count = 32;
     ctx->required_algorithm = PSA_ALG_SHA_256;
@@ -424,9 +429,14 @@ static inline void bootutil_ecdsa_init(bootutil_ecdsa_context *ctx)
 
 static inline void bootutil_ecdsa_drop(bootutil_ecdsa_context *ctx)
 {
-    if (ctx->key_id != PSA_KEY_ID_NULL) {
+#if !defined(MCUBOOT_BUILTIN_KEY)
+    if (ctx->key_id != PSA_KEY_ID_NULL)
+    {
         (void)psa_destroy_key(ctx->key_id);
     }
+#else
+    (void)ctx;
+#endif
 }
 
 #if !defined(MCUBOOT_BUILTIN_KEY)
