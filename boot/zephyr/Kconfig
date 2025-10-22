@@ -293,9 +293,12 @@ config BOOT_ECDSA_CC310
 
 config BOOT_ECDSA_PSA
 	bool "Use psa cryptoo"
+	select PSA_CRYPTO
 	select BOOT_USE_PSA_CRYPTO
 	select PSA_CRYPTO_CLIENT
 	select PSA_CRYPTO_C
+	select MBEDTLS_ENABLE_HEAP if BOOT_BUILTIN_KEY
+	select MBEDTLS_PSA_CRYPTO_BUILTIN_KEYS if BOOT_BUILTIN_KEY
 	select BOOT_IMG_HASH_ALG_SHA256_ALLOW
 	select BOOT_IMG_HASH_ALG_SHA512_ALLOW
 	select BOOT_ECDSA_PSA_DEPENDENCIES
@@ -374,6 +377,23 @@ config BOOT_KEY_IMPORT_BYPASS_ASN
 endif
 
 endchoice
+
+# Built-in (opaque) key support for the PSA ECDSA path
+config BOOT_BUILTIN_KEY
+	bool "Use platform built-in (opaque) public key"
+	depends on BOOT_ECDSA_PSA
+	help
+	  Enable this if the platform exposes the public key via a secure
+	  element or hardware keystore and MCUboot should reference it
+	  at runtime (via a platform-provided key identifier).
+
+config BOOT_BUILTIN_KEY_ID
+	hex "Built-in public key identifier"
+	depends on BOOT_BUILTIN_KEY
+	default 0x0
+	help
+	  Hardware/PSA key identifier (uint32_t) for the built-in public key.
+	  This value is platform specific.
 
 config BOOT_BYPASS_KEY_MATCH
 	bool "Do not match TLV key hash against built in key"

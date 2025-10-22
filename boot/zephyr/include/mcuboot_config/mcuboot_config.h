@@ -523,4 +523,12 @@
     k_cpu_idle(); \
   }
 
+#ifdef CONFIG_BOOT_BUILTIN_KEY
+#define MCUBOOT_BUILTIN_KEY
+#endif
+
+#ifdef CONFIG_BOOT_BUILTIN_KEY_ID
+#define MCUBOOT_BUILTIN_KEY_ID CONFIG_BOOT_BUILTIN_KEY_ID
+#endif
+
 #endif /* __MCUBOOT_CONFIG_H__ */
