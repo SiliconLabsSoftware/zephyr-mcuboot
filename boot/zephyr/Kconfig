@@ -340,9 +340,12 @@ config BOOT_ECDSA_CC310
 
 config BOOT_ECDSA_PSA
 	bool "Use PSA crypto"
+	select PSA_CRYPTO
 	select BOOT_USE_PSA_CRYPTO
 	select PSA_CRYPTO_CLIENT
 	select PSA_CRYPTO_C
+	select MBEDTLS_ENABLE_HEAP if BOOT_BUILTIN_KEY
+	select MBEDTLS_PSA_CRYPTO_BUILTIN_KEYS if BOOT_BUILTIN_KEY
 	select BOOT_IMG_HASH_ALG_SHA256_ALLOW
 	select BOOT_IMG_HASH_ALG_SHA512_ALLOW
 	select BOOT_ECDSA_PSA_DEPENDENCIES
@@ -469,7 +472,6 @@ config BOOT_SIGNATURE_KEY_FILE
 	default "root-rsa-3072.pem" if BOOT_SIGNATURE_TYPE_RSA && BOOT_SIGNATURE_TYPE_RSA_LEN=3072
 	default "root-rsa-2048.pem" if BOOT_SIGNATURE_TYPE_RSA && BOOT_SIGNATURE_TYPE_RSA_LEN=2048
 	default ""
-	depends on !BOOT_BUILTIN_KEY
 	help
 	  You can use either absolute or relative path.
 	  In case relative path is used, the build system assumes that it starts
@@ -531,6 +533,14 @@ config BOOT_BUILTIN_KEY
 	bool "Use built-in key for image verification"
 	help
 	  Use built-in key for image verification, otherwise the public key is embedded in MCUBoot.
+
+config BOOT_BUILTIN_KEY_ID
+	hex "Built-in public key identifier"
+	depends on BOOT_BUILTIN_KEY
+	default 0x0
+	help
+	  Hardware/PSA key identifier (uint32_t) for the built-in public key.
+	  This value is platform specific.
 
 config BOOT_VALIDATE_SLOT0
 	bool "Validate image in the primary slot on every boot"
