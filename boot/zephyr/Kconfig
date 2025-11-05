@@ -310,6 +310,7 @@ if BOOT_SIGNATURE_TYPE_ECDSA_P256
 
 choice BOOT_ECDSA_IMPLEMENTATION
 	prompt "Ecdsa implementation"
+	default BOOT_ECDSA_PSA if SOC_FAMILY_SILABS_S2
 	default BOOT_ECDSA_TINYCRYPT
 
 config BOOT_ECDSA_TINYCRYPT
@@ -531,12 +532,14 @@ config BOOT_HW_KEY
 
 config BOOT_BUILTIN_KEY
 	bool "Use built-in key for image verification"
+	default y if PSA_CRYPTO_DRIVER_SILABS_HSE
 	help
 	  Use built-in key for image verification, otherwise the public key is embedded in MCUBoot.
 
 config BOOT_BUILTIN_KEY_ID
 	hex "Built-in public key identifier"
 	depends on BOOT_BUILTIN_KEY
+	default 0x7fff0001 if PSA_CRYPTO_DRIVER_SILABS_HSE
 	default 0x0
 	help
 	  Hardware/PSA key identifier (uint32_t) for the built-in public key.
